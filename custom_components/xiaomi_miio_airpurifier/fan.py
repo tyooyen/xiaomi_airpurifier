@@ -219,6 +219,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
                 MODEL_AIRPURIFIER_2H,
                 MODEL_AIRPURIFIER_3,
                 MODEL_AIRPURIFIER_3H,
+                MODEL_AIRPURIFIER_3C,
                 MODEL_AIRPURIFIER_ZA1,
                 MODEL_AIRPURIFIER_AIRDOG_X3,
                 MODEL_AIRPURIFIER_AIRDOG_X5,
@@ -352,6 +353,7 @@ ATTR_ERROR_DETECTED = "error_detected"
 
 PURIFIER_MIOT = [MODEL_AIRPURIFIER_3, MODEL_AIRPURIFIER_3H]
 PURIFIER_ZA1 = [MODEL_AIRPURIFIER_ZA1]
+PURIFIER_MB4 = [MODEL_AIRPURIFIER_3C]
 HUMIDIFIER_MIOT = [MODEL_AIRHUMIDIFIER_CA4]
 
 # AirDogX7SM
@@ -464,6 +466,15 @@ AVAILABLE_ATTRIBUTES_AIRPURIFIER_3 = {
     ATTR_FILTER_RFID_TAG: "filter_rfid_tag",
     ATTR_FILTER_TYPE: "filter_type",
     ATTR_FAN_LEVEL: "fan_level",
+}
+
+AVAILABLE_ATTRIBUTES_AIRPURIFIER_3C = {
+    ATTR_AIR_QUALITY_INDEX: "aqi",
+    ATTR_MODE: "mode",
+    ATTR_FILTER_HOURS_USED: "filter_hours_used",
+    ATTR_FILTER_LIFE: "filter_life_remaining",
+    ATTR_BUZZER: "buzzer",
+    ATTR_MOTOR_SPEED: "motor_speed",
 }
 
 AVAILABLE_ATTRIBUTES_AIRPURIFIER_V3 = {
@@ -722,6 +733,8 @@ OPERATION_MODES_AIRPURIFIER_PRO_V7 = OPERATION_MODES_AIRPURIFIER_PRO
 OPERATION_MODES_AIRPURIFIER_2S = ["Auto", "Silent", "Favorite"]
 OPERATION_MODES_AIRPURIFIER_2H = OPERATION_MODES_AIRPURIFIER
 OPERATION_MODES_AIRPURIFIER_3 = ["Auto", "Silent", "Favorite", "Fan"]
+OPERATION_MODES_AIRPURIFIER_3C = ["Auto", "Silent", "Favorite"]
+OPERATION_MODES_AIRPURIFIER_ZA1 = ["Auto", "Silent", "Favorite"]
 OPERATION_MODES_AIRPURIFIER_V3 = [
     "Auto",
     "Silent",
@@ -811,6 +824,12 @@ FEATURE_FLAGS_AIRPURIFIER_3 = (
     | FEATURE_SET_FAVORITE_LEVEL
     | FEATURE_SET_FAN_LEVEL
     | FEATURE_SET_LED_BRIGHTNESS
+)
+
+FEATURE_FLAGS_AIRPURIFIER_3C = (
+    FEATURE_SET_BUZZER
+    | FEATURE_SET_CHILD_LOCK
+    | FEATURE_SET_MOTOR_SPEED
 )
 
 FEATURE_FLAGS_AIRPURIFIER_V3 = (
@@ -1132,6 +1151,9 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     elif model in PURIFIER_ZA1:
         air_purifier = AirPurifierMiot(host, token, mapping=MAPPING_ZA1)
         device = XiaomiAirPurifierMiot(name, air_purifier, model, unique_id, retries)
+    elif model in PURIFIER_MB4:
+        air_purifier = AirPurifierMB4(host, token)
+        device = XiaomiAirPurifierMiot(name, air_purifier, model, unique_id, retries)
     elif model.startswith("zhimi.airpurifier."):
         air_purifier = AirPurifier(host, token)
         device = XiaomiAirPurifier(name, air_purifier, model, unique_id)
@@ -1425,7 +1447,11 @@ class XiaomiAirPurifier(XiaomiGenericDevice):
         elif self._model in PURIFIER_ZA1:
             self._device_features = FEATURE_FLAGS_AIRPURIFIER_3
             self._available_attributes = AVAILABLE_ATTRIBUTES_AIRPURIFIER_3
-            self._preset_modes = OPERATION_MODES_AIRPURIFIER_3
+            self._preset_modes = OPERATION_MODES_AIRPURIFIER_ZA1
+        elif self._model in PURIFIER_MB4:
+            self._device_features = FEATURE_FLAGS_AIRPURIFIER_3C
+            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRPURIFIER_3C
+            self._preset_modes = OPERATION_MODES_AIRPURIFIER_3C
         elif self._model == MODEL_AIRPURIFIER_V3:
             self._device_features = FEATURE_FLAGS_AIRPURIFIER_V3
             self._available_attributes = AVAILABLE_ATTRIBUTES_AIRPURIFIER_V3
