@@ -1,3 +1,5 @@
+Fork from syssi/xiaomi_airpurifier(https://github.com/syssi/xiaomi_airpurifier)
+
 # Xiaomi Mi Air Purifier & Xiaomi Mi Air Humidifier
 
 This is a custom component for home assistant to integrate the Xiaomi Mi Air Purifier 2, Air Purifier 2S, Air Purifier Pro, Air Humidifier, Air Fresh and Pedestal Fan.
