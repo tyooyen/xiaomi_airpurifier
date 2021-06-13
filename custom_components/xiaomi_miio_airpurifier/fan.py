@@ -18,6 +18,7 @@ from miio import (  # pylint: disable=import-error
     AirHumidifierMjjsq,
     AirPurifier,
     AirPurifierMiot,
+    AirPurifierMB4,
     Device,
     DeviceException,
     Fan,
@@ -109,6 +110,42 @@ DOMAIN = "xiaomi_miio_airpurifier"
 CONF_MODEL = "model"
 CONF_RETRIES = "retries"
 
+MAPPING_ZA1 = {
+    # Air Purifier (siid=2)
+    "power": {"siid": 2, "piid": 1},
+    "fan_level": {"siid": 2, "piid": 4},
+    "mode": {"siid": 2, "piid": 5},
+    # Environment (siid=3)
+    "humidity": {"siid": 3, "piid": 7},
+    "temperature": {"siid": 3, "piid": 8},
+    "aqi": {"siid": 3, "piid": 6},
+    # Filter (siid=4)
+    "filter_life_remaining": {"siid": 4, "piid": 3},
+    "filter_hours_used": {"siid": 4, "piid": 5},
+    # Alarm (siid=5)
+    "buzzer": {"siid": 5, "piid": 1},
+    "buzzer_volume": {"siid": 5, "piid": 2},
+    # Indicator Light (siid=6)
+    "led_brightness": {"siid": 6, "piid": 1},
+    "led": {"siid": 6, "piid": 6},
+    # Physical Control Locked (siid=7)
+    "child_lock": {"siid": 7, "piid": 1},
+    # Motor Speed (siid=10)
+    "favorite_level": {"siid": 10, "piid": 10},
+    "favorite_rpm": {"siid": 10, "piid": 7},
+    "motor_speed": {"siid": 10, "piid": 8},
+    # Use time (siid=12)
+    "use_time": {"siid": 12, "piid": 1},
+    # AQI (siid=13)
+    "purify_volume": {"siid": 13, "piid": 1},
+    "average_aqi": {"siid": 13, "piid": 2},
+    # RFID (siid=14)
+    "filter_rfid_tag": {"siid": 14, "piid": 1},
+    "filter_rfid_product_id": {"siid": 14, "piid": 3},
+    # Other (siid=15)
+    "app_extra": {"siid": 15, "piid": 1},
+}
+
 MODEL_AIRPURIFIER_V1 = "zhimi.airpurifier.v1"
 MODEL_AIRPURIFIER_V2 = "zhimi.airpurifier.v2"
 MODEL_AIRPURIFIER_V3 = "zhimi.airpurifier.v3"
@@ -125,6 +162,7 @@ MODEL_AIRPURIFIER_2S = "zhimi.airpurifier.mc1"
 MODEL_AIRPURIFIER_2H = "zhimi.airpurifier.mc2"
 MODEL_AIRPURIFIER_3 = "zhimi.airpurifier.ma4"
 MODEL_AIRPURIFIER_3H = "zhimi.airpurifier.mb3"
+MODEL_AIRPURIFIER_3C = "zhimi.airpurifier.mb4"
 MODEL_AIRPURIFIER_ZA1 = "zhimi.airpurifier.za1"
 MODEL_AIRPURIFIER_AIRDOG_X3 = "airdog.airpurifier.x3"
 MODEL_AIRPURIFIER_AIRDOG_X5 = "airdog.airpurifier.x5"
@@ -312,7 +350,8 @@ ATTR_RAW_SPEED = "raw_speed"
 # Fan Leshow SS4
 ATTR_ERROR_DETECTED = "error_detected"
 
-PURIFIER_MIOT = [MODEL_AIRPURIFIER_3, MODEL_AIRPURIFIER_3H, MODEL_AIRPURIFIER_ZA1]
+PURIFIER_MIOT = [MODEL_AIRPURIFIER_3, MODEL_AIRPURIFIER_3H]
+PURIFIER_ZA1 = [MODEL_AIRPURIFIER_ZA1]
 HUMIDIFIER_MIOT = [MODEL_AIRHUMIDIFIER_CA4]
 
 # AirDogX7SM
@@ -1090,6 +1129,9 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     if model in PURIFIER_MIOT:
         air_purifier = AirPurifierMiot(host, token)
         device = XiaomiAirPurifierMiot(name, air_purifier, model, unique_id, retries)
+    elif model in PURIFIER_ZA1:
+        air_purifier = AirPurifierMiot(host, token, mapping=MAPPING_ZA1)
+        device = XiaomiAirPurifierMiot(name, air_purifier, model, unique_id, retries)
     elif model.startswith("zhimi.airpurifier."):
         air_purifier = AirPurifier(host, token)
         device = XiaomiAirPurifier(name, air_purifier, model, unique_id)
@@ -1377,6 +1419,10 @@ class XiaomiAirPurifier(XiaomiGenericDevice):
             self._available_attributes = AVAILABLE_ATTRIBUTES_AIRPURIFIER_2H
             self._preset_modes = OPERATION_MODES_AIRPURIFIER_2H
         elif self._model in PURIFIER_MIOT:
+            self._device_features = FEATURE_FLAGS_AIRPURIFIER_3
+            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRPURIFIER_3
+            self._preset_modes = OPERATION_MODES_AIRPURIFIER_3
+        elif self._model in PURIFIER_ZA1:
             self._device_features = FEATURE_FLAGS_AIRPURIFIER_3
             self._available_attributes = AVAILABLE_ATTRIBUTES_AIRPURIFIER_3
             self._preset_modes = OPERATION_MODES_AIRPURIFIER_3
