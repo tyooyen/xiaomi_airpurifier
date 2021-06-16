@@ -111,9 +111,9 @@ CONF_MODEL = "model"
 CONF_RETRIES = "retries"
 
 MAPPING_ZA1 = {
+    # source https://miot-spec.org/miot-spec-v2/instance?type=urn:miot-spec-v2:device:air-purifier:0000A007:zhimi-za1:2
     # Air Purifier (siid=2)
     "power": {"siid": 2, "piid": 1},
-    "fan_level": {"siid": 2, "piid": 4},
     "mode": {"siid": 2, "piid": 5},
     # Environment (siid=3)
     "humidity": {"siid": 3, "piid": 7},
@@ -124,16 +124,12 @@ MAPPING_ZA1 = {
     "filter_hours_used": {"siid": 4, "piid": 5},
     # Alarm (siid=5)
     "buzzer": {"siid": 5, "piid": 1},
-    "buzzer_volume": {"siid": 5, "piid": 2},
-    # Indicator Light (siid=6)
     "led_brightness": {"siid": 6, "piid": 1},
-    "led": {"siid": 6, "piid": 6},
     # Physical Control Locked (siid=7)
     "child_lock": {"siid": 7, "piid": 1},
     # Motor Speed (siid=10)
     "favorite_level": {"siid": 10, "piid": 10},
-    "favorite_rpm": {"siid": 10, "piid": 7},
-    "motor_speed": {"siid": 10, "piid": 8},
+    "motor_speed": {"siid": 10, "piid": 11},
     # Use time (siid=12)
     "use_time": {"siid": 12, "piid": 1},
     # AQI (siid=13)
@@ -142,8 +138,6 @@ MAPPING_ZA1 = {
     # RFID (siid=14)
     "filter_rfid_tag": {"siid": 14, "piid": 1},
     "filter_rfid_product_id": {"siid": 14, "piid": 3},
-    # Other (siid=15)
-    "app_extra": {"siid": 15, "piid": 1},
 }
 
 MODEL_AIRPURIFIER_V1 = "zhimi.airpurifier.v1"
@@ -272,6 +266,7 @@ ATTR_MOTOR_SPEED = "motor_speed"
 ATTR_AVERAGE_AIR_QUALITY_INDEX = "average_aqi"
 ATTR_PURIFY_VOLUME = "purify_volume"
 ATTR_BRIGHTNESS = "brightness"
+ATTR_BRIGHTNESS_LEVEL = "brightness_level"
 ATTR_LEVEL = "level"
 ATTR_FAN_LEVEL = "fan_level"
 ATTR_MOTOR2_SPEED = "motor2_speed"
@@ -290,6 +285,9 @@ ATTR_SLEEP_MODE = "sleep_mode"
 ATTR_VOLUME = "volume"
 ATTR_USE_TIME = "use_time"
 ATTR_BUTTON_PRESSED = "button_pressed"
+
+# Air Purifier 3C
+ATTR_LED_BRIGHTNESS_LEVEL = "led_brightness_level"
 
 # Air Humidifier
 ATTR_TARGET_HUMIDITY = "target_humidity"
@@ -468,6 +466,25 @@ AVAILABLE_ATTRIBUTES_AIRPURIFIER_3 = {
     ATTR_FAN_LEVEL: "fan_level",
 }
 
+AVAILABLE_ATTRIBUTES_AIRPURIFIER_ZA1 = {
+    ATTR_TEMPERATURE: "temperature",
+    ATTR_HUMIDITY: "humidity",
+    ATTR_AIR_QUALITY_INDEX: "aqi",
+    ATTR_MODE: "mode",
+    ATTR_FILTER_HOURS_USED: "filter_hours_used",
+    ATTR_FILTER_LIFE: "filter_life_remaining",
+    ATTR_FAVORITE_LEVEL: "favorite_level",
+    ATTR_CHILD_LOCK: "child_lock",
+    ATTR_MOTOR_SPEED: "motor_speed",
+    ATTR_AVERAGE_AIR_QUALITY_INDEX: "average_aqi",
+    ATTR_PURIFY_VOLUME: "purify_volume",
+    ATTR_USE_TIME: "use_time",
+    ATTR_BUZZER: "buzzer",
+    ATTR_LED_BRIGHTNESS: "led_brightness",
+    ATTR_FILTER_RFID_PRODUCT_ID: "filter_rfid_product_id",
+    ATTR_FILTER_RFID_TAG: "filter_rfid_tag",
+}
+
 AVAILABLE_ATTRIBUTES_AIRPURIFIER_3C = {
     ATTR_AIR_QUALITY_INDEX: "aqi",
     ATTR_MODE: "mode",
@@ -475,6 +492,7 @@ AVAILABLE_ATTRIBUTES_AIRPURIFIER_3C = {
     ATTR_FILTER_LIFE: "filter_life_remaining",
     ATTR_BUZZER: "buzzer",
     ATTR_MOTOR_SPEED: "motor_speed",
+    ATTR_LED_BRIGHTNESS_LEVEL: "led_brightness_level"
 }
 
 AVAILABLE_ATTRIBUTES_AIRPURIFIER_V3 = {
@@ -776,6 +794,9 @@ FEATURE_SET_NATURAL_MODE = 8192
 # Airfresh VA4
 FEATURE_SET_PTC = 65536
 
+# Air Purifier MB4
+FEATURE_SET_LED_BRIGHTNESS_LEVEL = 4194304
+
 FEATURE_FLAGS_AIRPURIFIER = (
     FEATURE_SET_BUZZER
     | FEATURE_SET_CHILD_LOCK
@@ -826,10 +847,16 @@ FEATURE_FLAGS_AIRPURIFIER_3 = (
     | FEATURE_SET_LED_BRIGHTNESS
 )
 
+FEATURE_FLAGS_AIRPURIFIER_ZA1 = (
+    FEATURE_SET_BUZZER
+    | FEATURE_SET_CHILD_LOCK
+    | FEATURE_SET_LED_BRIGHTNESS
+)
+
 FEATURE_FLAGS_AIRPURIFIER_3C = (
     FEATURE_SET_BUZZER
     | FEATURE_SET_CHILD_LOCK
-    | FEATURE_SET_MOTOR_SPEED
+    | FEATURE_SET_LED_BRIGHTNESS_LEVEL
 )
 
 FEATURE_FLAGS_AIRPURIFIER_V3 = (
@@ -941,6 +968,7 @@ SERVICE_SET_FAN_LED_OFF = "fan_set_led_off"
 SERVICE_SET_CHILD_LOCK_ON = "fan_set_child_lock_on"
 SERVICE_SET_CHILD_LOCK_OFF = "fan_set_child_lock_off"
 SERVICE_SET_LED_BRIGHTNESS = "fan_set_led_brightness"
+SERVICE_SET_LED_BRIGHTNESS_LEVEL = "fan_set_led_brightness_level"
 SERVICE_SET_FAVORITE_LEVEL = "fan_set_favorite_level"
 SERVICE_SET_FAN_LEVEL = "fan_set_fan_level"
 SERVICE_SET_AUTO_DETECT_ON = "fan_set_auto_detect_on"
@@ -985,6 +1013,10 @@ AIRPURIFIER_SERVICE_SCHEMA = vol.Schema({vol.Optional(ATTR_ENTITY_ID): cv.entity
 
 SERVICE_SCHEMA_LED_BRIGHTNESS = AIRPURIFIER_SERVICE_SCHEMA.extend(
     {vol.Required(ATTR_BRIGHTNESS): vol.All(vol.Coerce(int), vol.Clamp(min=0, max=2))}
+)
+
+SERVICE_SCHEMA_LED_BRIGHTNESS_LEVEL = AIRPURIFIER_SERVICE_SCHEMA.extend(
+    {vol.Required(ATTR_BRIGHTNESS_LEVEL): vol.All(vol.Coerce(int), vol.Clamp(min=0, max=8))}
 )
 
 SERVICE_SCHEMA_FAVORITE_LEVEL = AIRPURIFIER_SERVICE_SCHEMA.extend(
@@ -1058,6 +1090,10 @@ SERVICE_TO_METHOD = {
     SERVICE_SET_LED_BRIGHTNESS: {
         "method": "async_set_led_brightness",
         "schema": SERVICE_SCHEMA_LED_BRIGHTNESS,
+    },
+    SERVICE_SET_LED_BRIGHTNESS_LEVEL: {
+        "method": "async_set_led_brightness_level",
+        "schema": SERVICE_SCHEMA_LED_BRIGHTNESS_LEVEL,
     },
     SERVICE_SET_FAVORITE_LEVEL: {
         "method": "async_set_favorite_level",
@@ -1153,7 +1189,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         device = XiaomiAirPurifierMiot(name, air_purifier, model, unique_id, retries)
     elif model in PURIFIER_MB4:
         air_purifier = AirPurifierMB4(host, token)
-        device = XiaomiAirPurifierMiot(name, air_purifier, model, unique_id, retries)
+        device = XiaomiAirPurifierMB4(name, air_purifier, model, unique_id, retries)
     elif model.startswith("zhimi.airpurifier."):
         air_purifier = AirPurifier(host, token)
         device = XiaomiAirPurifier(name, air_purifier, model, unique_id)
@@ -1445,8 +1481,8 @@ class XiaomiAirPurifier(XiaomiGenericDevice):
             self._available_attributes = AVAILABLE_ATTRIBUTES_AIRPURIFIER_3
             self._preset_modes = OPERATION_MODES_AIRPURIFIER_3
         elif self._model in PURIFIER_ZA1:
-            self._device_features = FEATURE_FLAGS_AIRPURIFIER_3
-            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRPURIFIER_3
+            self._device_features = FEATURE_FLAGS_AIRPURIFIER_ZA1
+            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRPURIFIER_ZA1
             self._preset_modes = OPERATION_MODES_AIRPURIFIER_ZA1
         elif self._model in PURIFIER_MB4:
             self._device_features = FEATURE_FLAGS_AIRPURIFIER_3C
@@ -1686,6 +1722,39 @@ class XiaomiAirPurifierMiot(XiaomiAirPurifier):
             "Setting the led brightness of the miio device failed.",
             self._device.set_led_brightness,
             AirpurifierMiotLedBrightness(brightness),
+        )
+
+
+class XiaomiAirPurifierMB4(XiaomiAirPurifier):
+    """Representation of a Xiaomi Air Purifier 3C (MiOT protocol)."""
+
+    @property
+    def preset_mode(self):
+        """Get the current preset mode."""
+        if self._state:
+            return AirpurifierMiotOperationMode(self._state_attrs[ATTR_MODE]).name
+
+        return None
+
+    async def async_set_preset_mode(self, preset_mode: str) -> None:
+        """Set the preset mode of the fan."""
+        _LOGGER.debug("Setting the preset mode to: %s", preset_mode)
+
+        await self._try_command(
+            "Setting preset mode of the miio device failed.",
+            self._device.set_mode,
+            AirpurifierMiotOperationMode[preset_mode.title()],
+        )
+
+    async def async_set_led_brightness_level(self, brightness_level: int = 8):
+        """Set the led brightness."""
+        if self._device_features & FEATURE_SET_LED_BRIGHTNESS_LEVEL == 0:
+            return
+
+        await self._try_command(
+            "Setting the led brightness of the miio device failed.",
+            self._device.set_led_brightness_level,
+            brightness_level,
         )
 
 

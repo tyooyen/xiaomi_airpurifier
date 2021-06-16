@@ -70,6 +70,16 @@ fan_set_led_brightness:
       description: Brightness (0 = Bright, 1 = Dim, 2 = Off)
       example: 1
 
+fan_set_led_brightness_level:
+  description: Set the led brightness level.
+  fields:
+    entity_id:
+      description: Name of the xiaomi miio entity.
+      example: "xiaomi_miio_airpurifier.xiaomi_miio_device"
+    brightness_level:
+      description: Brightness (0 = Off, 3 = Dim, 8 = Bright)
+      example: 8
+
 fan_set_auto_detect_on:
   description: Turn the auto detect on.
   fields:
