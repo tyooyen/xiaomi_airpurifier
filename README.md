@@ -264,6 +264,53 @@ This model uses newer MiOT communication protocol.
   - `filter_type`
   - `fan_level`
 
+### Air Purifier 3C (zhimi.airpurifier.mb4)
+
+This model uses newer MiOT communication protocol.
+
+- Power (on, off)
+- Preset modes (auto, silent, favorite)
+- Buzzer (on, off)
+- Brightness Level (0 = Off, 3 = Dim, 8 = Bright)
+- Attributes
+  - `model`
+  - `aqi`
+  - `mode`
+  - `filter_hours_used`
+  - `filter_life_remaining`
+  - `motor_speed`
+  - `buzzer`
+  - `led_brightness_level`
+
+### Smartmi Air Purifier (zhimi.airpurifier.za1)
+
+This model uses newer MiOT communication protocol.
+
+- Power (on, off)
+- Preset modes (auto, silent, favorite, fan)
+- Buzzer (on, off)
+- Child lock (on, off)
+- Favorite Level (0...16)
+- Brightness (0 = Bright, 1 = Dim, 2 = Off)
+- Attributes
+  - `model`
+  - `temperature`
+  - `humidity`
+  - `aqi`
+  - `mode`
+  - `filter_hours_used`
+  - `filter_life_remaining`
+  - `favorite_level`
+  - `child_lock`
+  - `motor_speed`
+  - `average_aqi`
+  - `purify_volume`
+  - `use_time`
+  - `buzzer`
+  - `led_brightness`
+  - `filter_rfid_product_id`
+  - `filter_rfid_tag`
+
 ### Air Purifier V3 (zhimi.airpurifier.v3)
 
 - Power (on, off)
